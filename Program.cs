@@ -303,7 +303,7 @@ namespace NeonBot
             _client.Log += Log;
        
             
-            var token = "OTI1NDQxNjU1NjMxMzg0NjY3.YctKtA.YFnTyfqaTvZzt5G-Nb3nOHtvku8";
+            var token = "bot token...";
 
             await _client.LoginAsync(TokenType.Bot, token);
             await _client.StartAsync();
