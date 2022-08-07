@@ -71,7 +71,7 @@ namespace NeonBot
         public async Task HelpCommand()
         {
             Console.WriteLine("Help.");
-            await ReplyAsync("**Help:**\n **help: **shows this help message.\n **countdown:** Counts down from seconds x(must be 60 or lower)\n **The prefix is '$'**");
+            await ReplyAsync("**Help:**\n **help: **shows this help message.\n **countdown:** Counts down from seconds x(must be 60 or lower)\n **rct:** Shows most important ReCT websites.\n **report <user> <cause>: **Sends a report to the server owner, specified a reason and infringing user.\n **doc <docName>:** Sends a ReCT document into chat, specified the name of it.\n **spoilergame <spoilerCount>: **Begins the spoiler game.\n **Fun Commands: **\n **rusroulette <players>: **Play russian roulette with an n number of players!\n **gamble <cash>: **Gamble some 'money'.\n **rolldice: **Rolls a 1-6 dice.\n **translate <languageFrom> <:text>: **Translates the text specified from the language specified into english.\nThe prefix is '$'**");
         }
 
         [Command("beannoying")]
@@ -238,7 +238,7 @@ namespace NeonBot
             var EmbedBuilder = new EmbedBuilder()
                 .WithAuthor(Context.User)
                 .WithTitle("User Report Card")
-                .WithDescription("Reported User: "+user.Id+" :: "+user.Username+"\n **Reason:**\n "+reason)
+                .WithDescription("Reported User: " + user.Id + " :: " + user.Username + "\n **Reason:**\n " + reason + "\n **Message Link: " + Context.Message.GetJumpUrl())
                 .WithTimestamp(DateTimeOffset.UtcNow)
                 ;
 
@@ -250,10 +250,11 @@ namespace NeonBot
 
         [Command("otfrun")]
         [Alias("compile", "cx", "rct", "rect")]
-        public async Task OFTRunCode(string lang, [Remainder]string code)
+        public void OFTRunCode(string lang, [Remainder]string code)
         {
             
             code = code.Replace("```", "");
+            Console.WriteLine(code);
             if (lang == "cx")
             {
                 Console.WriteLine("cx chosen");
@@ -263,7 +264,7 @@ namespace NeonBot
                 Evaluator.callStack.Push(new StackFrame());
 
                 StringWriter sr = new StringWriter();
-                Console.SetOut(sr);
+                //Console.SetOut(sr);
 
                 var x = Parser.ParseProgram();
 
@@ -272,8 +273,13 @@ namespace NeonBot
                     Console.WriteLine("Parsed Successfully");
                     Evaluator.Evaluate(x.Ok.Value);
                 }
+                else
+                {
+                    ReplyAsync("couldn't evaluate ur code");
+                }
+                Console.WriteLine(sr.ToString());
 
-                await ReplyAsync("```\n"+sr.ToString()+"```");
+                ReplyAsync("```\n"+sr.ToString()+"```");
             }
         }
         [Command("gamble")]
@@ -337,7 +343,7 @@ namespace NeonBot
             await ReplyAsync("Find the 'ą'\n" + fz);
         }
 
-        private static readonly string subscriptionKey = "";
+        private static readonly string subscriptionKey = File.ReadAllLines("token.txt")[1];
         private static readonly string endpoint = "https://api.cognitive.microsofttranslator.com/";
 
         [Command("translate")]
@@ -578,7 +584,7 @@ namespace NeonBot
             SlashCommandBuilder _slashBuilder = new SlashCommandBuilder();
             _slashBuilder.WithName("roulette");
             var rouletteOpt = new SlashCommandOptionBuilder();
-            //rouletteOpt.AddOption("players", ApplicationCommandOptionType.User, "Choose users to include in ur roulette game.");
+            rouletteOpt.AddOption("players", ApplicationCommandOptionType.User, "Choose users to include in ur roulette game.");
             rouletteOpt.WithName("players");
             rouletteOpt.WithType(ApplicationCommandOptionType.User);
             rouletteOpt.AddChoice("player", 578974916771184651);
@@ -607,7 +613,7 @@ namespace NeonBot
   
        
             
-            var token = "";
+            var token = File.ReadAllLines("token.txt")[0];
 
             await _client.LoginAsync(Discord.TokenType.Bot, token);
             await _client.StartAsync();
